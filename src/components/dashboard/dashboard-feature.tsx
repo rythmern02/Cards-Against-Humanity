@@ -1,31 +1,81 @@
-'use client'
+"use client";
+import { useState } from 'react';
 
-import { AppHero } from '../ui/ui-layout'
+export default function Home() {
+    const [question, setQuestion] = useState('');
+    const [option1, setOption1] = useState('');
+    const [option2, setOption2] = useState('');
+    const [option3, setOption3] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
 
-const links: { label: string; href: string }[] = [
-  { label: 'Solana Docs', href: 'https://docs.solana.com/' },
-  { label: 'Solana Faucet', href: 'https://faucet.solana.com/' },
-  { label: 'Solana Cookbook', href: 'https://solanacookbook.com/' },
-  { label: 'Solana Stack Overflow', href: 'https://solana.stackexchange.com/' },
-  { label: 'Solana Developers GitHub', href: 'https://github.com/solana-developers/' },
-]
+    const generateBanner = async () => {
+        const response = await fetch('/api/banner', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                question,
+                option1,
+                option2,
+                option3
+            })
+        });
+        const data = await response.json();
+        if (data.imageUrl) {
+            setImageUrl(data.imageUrl);  // Store the Cloudinary URL in the state
+        }
+    };
 
-export default function DashboardFeature() {
-  return (
-    <div>
-      <AppHero title="gm" subtitle="Say hi to your new Solana dApp." />
-      <div className="max-w-xl mx-auto py-6 sm:px-6 lg:px-8 text-center">
-        <div className="space-y-2">
-          <p>Here are some helpful links to get you started.</p>
-          {links.map((link, index) => (
-            <div key={index}>
-              <a href={link.href} className="link" target="_blank" rel="noopener noreferrer">
-                {link.label}
-              </a>
+    return (
+        <div style={{ textAlign: 'center' }}>
+            <h1>Create Custom Banner</h1>
+            <input
+                type="text"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="Question"
+                style={{ marginBottom: '10px', padding: '8px', width: '80%' }}
+            />
+            <br />
+            <input
+                type="text"
+                value={option1}
+                onChange={(e) => setOption1(e.target.value)}
+                placeholder="Option 1"
+                style={{ marginBottom: '10px', padding: '8px', width: '80%' }}
+            />
+            <br />
+            <input
+                type="text"
+                value={option2}
+                onChange={(e) => setOption2(e.target.value)}
+                placeholder="Option 2"
+                style={{ marginBottom: '10px', padding: '8px', width: '80%' }}
+            />
+            <br />
+            <input
+                type="text"
+                value={option3}
+                onChange={(e) => setOption3(e.target.value)}
+                placeholder="Option 3"
+                style={{ marginBottom: '10px', padding: '8px', width: '80%' }}
+            />
+            <br />
+            <button onClick={generateBanner} style={{ padding: '10px 20px' }}>
+                Generate Banner
+            </button>
+            <div style={{ marginTop: '20px' }}>
+                {imageUrl && (
+                    <div>
+                        <img src={imageUrl} alt="Custom Banner" />
+                        <br />
+                        <a href={imageUrl} download="banner.png" style={{ padding: '10px 20px', textDecoration: 'none', background: '#0070f3', color: 'white' }}>
+                            Download Banner
+                        </a>
+                    </div>
+                )}
             </div>
-          ))}
         </div>
-      </div>
-    </div>
-  )
+    );
 }

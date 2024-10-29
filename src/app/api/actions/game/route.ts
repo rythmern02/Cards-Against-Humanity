@@ -13,6 +13,7 @@ import {
   ActionGetResponse,
   CompletedAction,
   ActionPostResponse,
+  NextActionLink,
   Action,
 } from "@solana/actions";
 
@@ -31,7 +32,6 @@ export async function GET(req: NextRequest) {
     : gameState.icon;
 
   let response: ActionGetResponse = {
-    type: "action",
     icon: iconUrl, // Dynamically set icon based on state
     title: "Cards Against Humanity",
     description:
@@ -43,44 +43,6 @@ export async function GET(req: NextRequest) {
           type: "transaction",
           label: "Start Game",
           href: "/api/actions/game?state=start", // Start the game
-        },
-        {
-          type: "transaction",
-          label: "Stop Game",
-          href: "/api/actions/game?state=stop", // Stop the game
-        },
-        {
-          type: "transaction",
-          label: "Restart Game",
-          href: "/api/actions/game?state=restart", // Restart the game
-        },
-        {
-          type: "transaction",
-          label: "Choose Option",
-          href: "/api/actions/game?state=choose&choice={choice}",
-          parameters: [
-            {
-              type: "select",
-              name: "choice",
-              label: "Choose one option",
-              required: true,
-              options: [
-                { label: "Option 1", value: "1" },
-                { label: "Option 2", value: "2" },
-                { label: "Option 3", value: "3" },
-              ],
-            },
-          ],
-        },
-        {
-          type: "transaction",
-          label: "Mint NFT",
-          href: "/api/actions/game?state=mint", // Mint NFT
-        },
-        {
-          type: "transaction",
-          label: "Vote for Task",
-          href: "/api/actions/game?state=vote", // Vote for task
         },
       ],
     },
@@ -99,76 +61,137 @@ export async function POST(req: NextRequest) {
     if (!account) {
       throw new Error("Account public key is required");
     }
+    const response = await fetch("http://localhost:3000/api/randomTask");
+    const data: any = await response.json();
+    const { task, options }: any = data;
+
+    console.log(
+      "here is the task ",
+      await task,
+      "and this is the options: ",
+      await options
+    );
+
+    // Fetch random task from your API
+    const resp = await fetch("http://localhost:3000/api/banner/initial", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // Specify that you're sending JSON data
+      },
+      body: JSON.stringify({
+        question: task,
+        option1: options[0],
+        option2: options[1],
+        option3: options[2],
+      }),
+    });
+    const datam = await resp.json();
+
+    console.log("Random task fetched: ", datam);
 
     let { searchParams } = req.nextUrl;
     let actionState = searchParams.get("state") || "";
 
+    // Convert the account string to a PublicKey object
     const sender = new PublicKey(account);
     console.log("Sender's public key:", sender);
 
-    // Perform action based on the "state" param
-    let message = "";
-    let response: Action = {
-      icon: gameState.icon,
-      label: `Game Action`,
-      title: `Action Taken`,
-      description: `An action was performed in the game.`,
+    const connection = new Connection(
+      process.env.SOLANA_RPC! || clusterApiUrl("devnet")
+    );
+    let amount = 0.0001;
+    let toPubkey = new PublicKey(
+      "8SM1A6wNgreszhF8U7Fp8NHqmgT8euMZFfUvv5wCaYfL"
+    );
+
+    const minimumBalance = await connection.getMinimumBalanceForRentExemption(
+      0
+    );
+
+    const transferSolInstruction = SystemProgram.transfer({
+      fromPubkey: sender, // Corrected here
+      toPubkey: toPubkey,
+      lamports: amount * LAMPORTS_PER_SOL,
+    });
+
+    const { blockhash, lastValidBlockHeight } =
+      await connection.getLatestBlockhash();
+
+    const transaction = new Transaction({
+      feePayer: sender, // Corrected here
+      blockhash,
+      lastValidBlockHeight,
+    }).add(transferSolInstruction);
+
+    const hello: Action = {
       type: "action",
-      links: { actions: [] },
+      icon: datam.imageUrl,
+      /** describes the source of the action request */
+      title: task,
+      /** brief summary of the action to be performed */
+      description:
+        "perform the above task with one of the options and click a picture while doing the task...",
+      /** button text rendered to the user */
+      label: "string",
+      links: {
+        /** list of related Actions a user could perform */
+        actions: [
+          {
+            type: "post",
+            href: `/api/actions/game/choose?choice={choice}&account=${account}&imageUrl={imageUrl}&task=${task}`,
+            label: "Choose",
+            parameters: [
+              {
+                type: "select",
+                name: "choice",
+                label: "Choose one option",
+                required: true,
+                options: [
+                  { label: options[0], value: options[0] },
+                  { label: options[1], value: options[1] },
+                  { label: options[2], value: options[2] },
+                ],
+              },
+              {
+                type: "url",
+                name: "imageUrl",
+                label: "Image URL",
+              },
+            ],
+          },
+          {
+            type: "transaction",
+            label: "Restart Game",
+            href: "/api/actions/game?state=restart", // Restart the game
+          },
+          {
+            type: "transaction",
+            label: "Mint NFT",
+            href: "/api/actions/game?state=mint", // Mint NFT
+          },
+          {
+            type: "transaction",
+            label: "Vote for Task",
+            href: "/api/actions/game?state=vote", // Vote for task
+          },
+        ],
+      },
     };
+    
+    const payload: ActionPostResponse = await createPostResponse({
+      fields: {
+        type: "transaction",
+        transaction: transaction,
+        links: {
+          next: {
+            type: "inline",
+            action: hello,
+          },
+        },
+      },
+    });
 
-    switch (actionState) {
-      case "start":
-        message = "Game started!";
-        gameState.isStarted = true;
-        response.title = "Game Started!";
-        response.description = "You have started the game.";
-        console.log("Game started.");
-        break;
-
-      case "stop":
-        message = "Game stopped!";
-        gameState.isStarted = false;
-        response.title = "Game Stopped!";
-        response.description = "You have stopped the game.";
-        console.log("Game stopped.");
-        break;
-
-      case "restart":
-        message = "Game restarted!";
-        gameState.isStarted = true;
-        response.title = "Game Restarted!";
-        response.description = "The game has been restarted.";
-        console.log("Game restarted.");
-        break;
-
-      case "choose":
-        const choice = searchParams.get("choice");
-        if (!choice) throw new Error("Choice parameter is missing");
-        message = `You selected option ${choice}.`;
-        response.title = `Option ${choice} Selected`;
-        response.description = `You chose option ${choice}. Perform the corresponding task.`;
-        break;
-
-      case "mint":
-        // Example mint NFT logic would be here
-        message = "NFT minted!";
-        response.title = "NFT Minted!";
-        response.description = "You have successfully minted an NFT.";
-        break;
-
-      case "vote":
-        // Example voting logic would be here
-        message = "Vote submitted!";
-        response.title = "Vote Submitted!";
-        response.description = "Your vote has been submitted.";
-        break;
-
-      default:
-        throw new Error("Invalid action parameter");
-    }
-
-    return NextResponse.json(response, {
+    return NextResponse.json(payload, {
       headers: ACTIONS_CORS_HEADERS,
     });
   } catch (err) {
