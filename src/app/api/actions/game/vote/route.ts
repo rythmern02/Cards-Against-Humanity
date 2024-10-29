@@ -192,55 +192,13 @@ export async function POST(req: NextRequest) {
       lastValidBlockHeight,
     }).add(transferSolInstruction);
 
-    const hello: Action = {
-      type: "action",
-      icon: datam.imageUrl,
-      /** describes the source of the action request */
-      title: task,
-      /** brief summary of the action to be performed */
-      description:
-        "perform the above task with one of the options and click a picture while doing the task....",
-      /** button text rendered to the user */
-      label: "string",
-      /** UI state for the button being rendered to the user */
-      // disabled?: boolean;
-      links: {
-        /** list of related Actions a user could perform */
-        actions: [
-          {
-            type: "post",
-            href: `/api/actions/game/choose?choice={choice}&account=${account}&imageUrl={imageUrl}&task=${task}`,
-            label: "Choose",
-            parameters: [
-              {
-                type: "select",
-                name: "choice",
-                label: "Choose one option",
-                required: true,
-                options: [{ label: "hello", value: "wass up" }],
-              },
-              {
-                type: "url",
-                name: "imageUrl",
-                label: "Image URL",
-              },
-            ],
-          },
-        ],
-      },
+    const payload: CompletedAction = {
+      type: "completed",
+      icon: "https://res.cloudinary.com/ducsu6916/image/upload/v1729534996/rjzl1f1c8yfko1stduvg.jpg",
+      title: "Voila!  ",
+      description: "Great you have Successfully minted the Nft of that task you 've performed!",
+      label: "this is RN"
     };
-    const payload: ActionPostResponse = await createPostResponse({
-      fields: {
-        type: "transaction",
-        transaction: transaction,
-        links: {
-          next: {
-            type: "inline",
-            action: hello,
-          },
-        },
-      },
-    });
 
     return NextResponse.json(payload, {
       headers: ACTIONS_CORS_HEADERS,

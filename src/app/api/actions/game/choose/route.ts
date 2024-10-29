@@ -202,7 +202,7 @@ export async function POST(req: NextRequest) {
         actions: [
           {
             type: "post",
-            href: `/api/actions/game/choose?choice={choice}&account=${account}&imageUrl={imageUrl}&task=${task}`,
+            href: `/api/actions/game/vote?choice={choice}&account=${account}`,
             label: "Choose",
             parameters: [
               {
@@ -210,7 +210,12 @@ export async function POST(req: NextRequest) {
                 name: "choice",
                 label: "Choose one option",
                 required: true,
-                options: [{ label: "hello", value: "wass up" }],
+                options: [{ label: "1 star", value:"1" },
+                  { label: "2 star", value:"2" },
+                  { label: "3 star", value:"3" },
+                  { label: "4 star", value:"4" },
+                  { label: "5 star", value:"5" }
+                ],
               },
               {
                 type: "url",

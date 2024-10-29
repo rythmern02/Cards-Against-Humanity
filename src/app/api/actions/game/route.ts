@@ -177,7 +177,7 @@ export async function POST(req: NextRequest) {
         ],
       },
     };
-    
+
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
         type: "transaction",
