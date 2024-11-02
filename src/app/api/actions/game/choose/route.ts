@@ -53,6 +53,7 @@ export async function GET(req: NextRequest) {
 }
 
 export const OPTIONS = POST;
+export const runtime = 'edge';
 
 export async function POST(req: NextRequest) {
   try {

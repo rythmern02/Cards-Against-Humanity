@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
 }
 
 export const OPTIONS = GET;
-
+export const runtime = 'edge';
 export async function POST(req: NextRequest) {
   try {
     const { account } = await req.json();
