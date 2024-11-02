@@ -1,5 +1,6 @@
 import { createCanvas } from 'canvas';
 import { v2 as cloudinary } from 'cloudinary';
+import { NextRequest } from 'next/server';
 
 // Configure Cloudinary with your credentials
 cloudinary.config({
@@ -8,7 +9,7 @@ cloudinary.config({
   api_secret: "t-h1i9ls6zX-CQRy4d5brCWzh98",
 });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     const { question, option1, option2, option3 } = await req.json();
     
     // Create the canvas with the banner
@@ -29,13 +30,13 @@ export async function POST(req: Request) {
 
     // Draw question text
     ctx.fillStyle = '#ffffff';  // White text for question
-    ctx.font = 'bold 40px';
+    ctx.font = 'bold 40px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(question, canvas.width / 2, 100);
 
     // Draw the options
     ctx.fillStyle = '#34c759';  // Green for option 1
-    ctx.font = '36px';
+    ctx.font = '36px sans-serif';
     ctx.fillText(option1, canvas.width / 2, 300);
 
     ctx.fillStyle = '#ff9500';  // Orange for option 2
@@ -67,7 +68,7 @@ export async function POST(req: Request) {
     try {
         // Upload the image to Cloudinary and get the result URL
         const imageUrl: any = await uploadToCloudinary();
-        return new Response( `these are the parameters${question}, ${option1}, ${option2}, ${option3} and this is the image url: ${JSON.stringify(imageUrl)}`, {
+        return new Response( `and here is the context: ${ctx} and font : ${ctx.font} ${JSON.stringify(imageUrl)}`, {
             headers: {
                 'Content-Type': 'application/json',
             },
