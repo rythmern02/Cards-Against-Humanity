@@ -13,60 +13,50 @@ export async function POST(req: NextRequest) {
   try {
     const { question, option1, option2, option3 } = await req.json();
 
+    // Escape special characters for XML
+    const escapeXml = (unsafe: string) => {
+      return unsafe.replace(/[<>&'"]/g, (c) => {
+        switch (c) {
+          case '<': return '&lt;';
+          case '>': return '&gt;';
+          case '&': return '&amp;';
+          case '\'': return '&apos;';
+          case '"': return '&quot;';
+          default: return c;
+        }
+      });
+    };
+
     // Create an SVG with the text and styling
     const svgImage = `
     <svg width="800" height="800" xmlns="http://www.w3.org/2000/svg">
-        <!-- Gradient Background -->
         <defs>
             <radialGradient id="grad" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" style="stop-color:#2a0c63;stop-opacity:1" />
                 <stop offset="100%" style="stop-color:#4e048d;stop-opacity:1" />
             </radialGradient>
         </defs>
-        
-        <!-- Background -->
         <rect width="800" height="800" fill="url(#grad)"/>
-        
-        <!-- Question Text -->
-        <text x="400" y="100" 
-            font-size="40" 
-            font-family="Arial, Helvetica, Sans-Serif" 
-            font-weight="bold" 
-            fill="white" 
-            text-anchor="middle">
-            ${question}
+        <text x="400" y="200" font-size="40" font-family="Arial, sans-serif" font-weight="bold" fill="white" text-anchor="middle">
+            <tspan x="400" dy="0">${escapeXml(question)}</tspan>
         </text>
-        
-        <!-- Options -->
-        <text x="400" y="300"  
-            font-size="36" 
-            font-family="Arial, Helvetica, Sans-Serif" 
-            fill="#34c759" 
-            text-anchor="middle">
-            ${option1}
+        <text x="400" y="350" font-size="36" font-family="Arial, sans-serif" fill="#34c759" text-anchor="middle">
+            <tspan x="400" dy="0">${escapeXml(option1)}</tspan>
         </text>
-        
-        <text x="400" y="400" 
-            font-size="36" 
-            font-family="Arial, Helvetica, Sans-Serif" 
-            fill="#ff9500" 
-            text-anchor="middle">
-            ${option2}
+        <text x="400" y="450" font-size="36" font-family="Arial, sans-serif" fill="#ff9500" text-anchor="middle">
+            <tspan x="400" dy="0">${escapeXml(option2)}</tspan>
         </text>
-        
-        <text x="400" y="500" 
-            font-size="36" 
-            font-family="Arial, Helvetica, Sans-Serif" 
-            fill="#ff2d55" 
-            text-anchor="middle">
-            ${option3}
+        <text x="400" y="550" font-size="36" font-family="Arial, sans-serif" fill="#ff2d55" text-anchor="middle">
+            <tspan x="400" dy="0">${escapeXml(option3)}</tspan>
         </text>
-    </svg>
-`;
+    </svg>`;
 
+    console.log("SVG Content:", svgImage); // Log SVG content for debugging
 
     // Convert SVG to PNG using Sharp
-    const buffer = await Sharp(Buffer.from(svgImage)).png().toBuffer();
+    const buffer = await Sharp(Buffer.from(svgImage, 'utf-8'))
+      .png()
+      .toBuffer();
 
     // Upload to Cloudinary
     const uploadToCloudinary = () => {
@@ -74,8 +64,13 @@ export async function POST(req: NextRequest) {
         const uploadStream = cloudinary.uploader.upload_stream(
           { folder: "banners" },
           (error: any, result: any) => {
-            if (error) reject(error);
-            else resolve(result.url);
+            if (error) {
+              console.error("Cloudinary upload error:", error);
+              reject(error);
+            } else {
+              console.log("Cloudinary upload success:", result.url);
+              resolve(result.url);
+            }
           }
         );
         uploadStream.end(buffer);
@@ -104,6 +99,7 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
 export const runtime = 'edge';
 /*whenever a person comes clicks on the start button thereafter he/she gets automatically gets an random task with three options and chooses one afterthat, 
     then he/she is asked the url of the image that he performed action for and prompt the task is completed,
