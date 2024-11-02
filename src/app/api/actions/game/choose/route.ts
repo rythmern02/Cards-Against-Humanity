@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 import {
-  Transaction,
   PublicKey,
-  SystemProgram,
   Connection,
   clusterApiUrl,
-  LAMPORTS_PER_SOL,
   VersionedMessage,
   TransactionInstruction,
   TransactionMessage,
@@ -15,15 +12,13 @@ import {
 import {
   ACTIONS_CORS_HEADERS,
   createPostResponse,
-  ActionGetResponse,
-  CompletedAction,
   ActionPostResponse,
   ActionError,
   Action,
 } from "@solana/actions";
 
 // Import required libraries
-import { create, mplCore } from "@metaplex-foundation/mpl-core";
+import { mplCore } from "@metaplex-foundation/mpl-core";
 import {
   createNoopSigner,
   generateSigner,
@@ -34,7 +29,6 @@ import {
   TransactionBuilder,
 } from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { irysUploader } from "@metaplex-foundation/umi-uploader-irys";
 import {
   createNft,
   mplTokenMetadata,
@@ -69,7 +63,7 @@ export async function POST(req: NextRequest) {
     let imageUrl = searchParams.get("imageUrl") || "";
     let task = searchParams.get("task") || "";
     console.log("here is the imageUrl: ", imageUrl)
-    const resp = await fetch("http://localhost:3000/api/banner/finalNft", {
+    const resp = await fetch("http://www.cardsagainsthumanity.fun/api/banner/finalNft", {
       method: "POST",
       headers: {
         "Content-Type": "application/json", // Specify that you're sending JSON data
@@ -87,7 +81,7 @@ export async function POST(req: NextRequest) {
     const description =
       "hello this is the description for the cards against humanity nft this means the person mints this got the proof that he has performed the task";
 
-    const externalUrl = "https://www.web3spell.fun";
+    const externalUrl = "https://www.cardsagainsthumanity.fun";
 
     const attributes = [
       {
@@ -121,7 +115,7 @@ export async function POST(req: NextRequest) {
     image: datam.imageUrl,
     description: description || "This is an NFT on Solana",
     external_url:
-      externalUrl || "https://localhost:3000/cards-against-humaniy",
+      externalUrl || "https://www.cardsagainsthumanity.fun",
     attributes: attributes || [],
     properties:  {
       files: [

@@ -11,13 +11,9 @@ import {
   ACTIONS_CORS_HEADERS,
   createPostResponse,
   ActionGetResponse,
-  CompletedAction,
   ActionPostResponse,
-  NextActionLink,
-  Action,
+  Action
 } from "@solana/actions";
-
-const connection = new Connection(clusterApiUrl("mainnet-beta"), "confirmed");
 
 // State to track game status and update the icon dynamically
 let gameState = {
@@ -61,7 +57,7 @@ export async function POST(req: NextRequest) {
     if (!account) {
       throw new Error("Account public key is required");
     }
-    const response = await fetch("http://localhost:3000/api/randomTask");
+    const response = await fetch("http://www.cardsagainsthumanity.fun/api/randomTask");
     const data: any = await response.json();
     const { task, options }: any = data;
 
@@ -73,7 +69,7 @@ export async function POST(req: NextRequest) {
     );
 
     // Fetch random task from your API
-    const resp = await fetch("http://localhost:3000/api/banner/initial", {
+    const resp = await fetch("http://www.cardsagainsthumanity.fun/api/banner/initial", {
       method: "POST",
       headers: {
         "Content-Type": "application/json", // Specify that you're sending JSON data
