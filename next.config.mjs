@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    compiler: {
+        emotion: true
+    },
     experimental: {
      outputFileTracingIncludes: {
-       './src/app/api/banner/initial': ['./public/fonts/**/*'],
+       '/api/banner/initial': ['./public/fonts/**/*'],
       },
     },
 };
