@@ -88,13 +88,13 @@ export async function POST(req: NextRequest) {
 
     // Draw task text at the top
     ctx.fillStyle = '#ffffff';  // White text
-    ctx.font = 'bold 40px Arial';
+    ctx.font = 'bold 40px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(task, canvas.width / 2, 100);
 
     // Draw option1 below the task
     ctx.fillStyle = '#34c759';  // Green text for option1
-    ctx.font = '36px Arial';
+    ctx.font = '36px sans-serif';
     ctx.fillText(option1, canvas.width / 2, 200);
 
     // Draw the image

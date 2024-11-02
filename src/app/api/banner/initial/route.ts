@@ -29,13 +29,13 @@ export async function POST(req: Request) {
 
     // Draw question text
     ctx.fillStyle = '#ffffff';  // White text for question
-    ctx.font = 'bold 40px Arial';
+    ctx.font = 'bold 40px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(question, canvas.width / 2, 100);
 
     // Draw the options
     ctx.fillStyle = '#34c759';  // Green for option 1
-    ctx.font = '36px Arial';
+    ctx.font = '36px sans-serif';
     ctx.fillText(option1, canvas.width / 2, 300);
 
     ctx.fillStyle = '#ff9500';  // Orange for option 2
