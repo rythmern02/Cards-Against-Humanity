@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
   // Define metadata for Pinata
   const metadata = {
     name: task || "Cards Against Humanity",
-    image: datam.imageUrl,
+    image: datam.uploadedImageUrl,
     description: description || "This is an NFT on Solana",
     external_url:
       externalUrl || "https://www.cardsagainsthumanity.fun",
@@ -182,7 +182,7 @@ export async function POST(req: NextRequest) {
 
     const hello: Action = {
       type: "action",
-      icon: datam.imageUrl,
+      icon: datam.uploadedImageUrl,
       /** describes the source of the action request */
       title: task,
       /** brief summary of the action to be performed */
