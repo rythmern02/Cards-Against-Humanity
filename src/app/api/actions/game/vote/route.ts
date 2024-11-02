@@ -39,13 +39,13 @@ export const POST = async (req: NextRequest) => {
     }
 
     // Validate the signature
-    let signature: any;
-    try {
-      signature = body.signature;
-      if (!signature) throw "Invalid signature";
-    } catch {
-      throw 'Invalid "signature" provided';
-    }
+    // let signature: any;
+    // try {
+    //   signature = body.signature;
+    //   if (!signature) throw "Invalid signature";
+    // } catch {
+    //   throw 'Invalid "signature" provided';
+    // }
 
     // Set up Solana connection
     const connection = new Connection(
@@ -53,26 +53,26 @@ export const POST = async (req: NextRequest) => {
     );
 
     // Confirm the transaction status
-    let status = await connection.getSignatureStatus(signature);
-    if (!status || !status.value) throw "Unknown signature status";
+    // let status = await connection.getSignatureStatus(signature);
+    // if (!status || !status.value) throw "Unknown signature status";
 
-    const confirmationStatus = status.value.confirmationStatus;
-    if (
-      confirmationStatus !== "confirmed" &&
-      confirmationStatus !== "finalized"
-    ) {
-      throw "Unable to confirm the transaction";
-    }
+    // const confirmationStatus = status.value.confirmationStatus;
+    // if (
+      // confirmationStatus !== "confirmed" &&
+      // confirmationStatus !== "finalized"
+    // ) {
+      // throw "Unable to confirm the transaction";
+    // }
 
     // Retrieve the transaction for verification
-    const transaction = await connection.getParsedTransaction(
-      signature,
-      "confirmed"
-    );
+    // const transaction = await connection.getParsedTransaction(
+    //   signature,
+    //   "confirmed"
+    // );
 
-    if (!transaction) {
-      throw "Transaction not found";
-    }
+    // if (!transaction) {
+    //   throw "Transaction not found";
+    // }
 
     // Construct the successful response payload
     const payload: CompletedAction = {
@@ -82,7 +82,7 @@ export const POST = async (req: NextRequest) => {
       label: "this is RN",
       description:
         `Great! You've successfully minted the NFT for the task you performed! ` +
-        `Transaction signature: ${signature}`,
+        `And voted for the tasks`,
     };
 
     return NextResponse.json(payload, {
