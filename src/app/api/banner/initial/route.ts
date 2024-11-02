@@ -29,13 +29,13 @@ export async function POST(req: Request) {
 
     // Draw question text
     ctx.fillStyle = '#ffffff';  // White text for question
-    ctx.font = 'bold 40px sans-serif';
+    ctx.font = 'bold 40px';
     ctx.textAlign = 'center';
     ctx.fillText(question, canvas.width / 2, 100);
 
     // Draw the options
     ctx.fillStyle = '#34c759';  // Green for option 1
-    ctx.font = '36px sans-serif';
+    ctx.font = '36px';
     ctx.fillText(option1, canvas.width / 2, 300);
 
     ctx.fillStyle = '#ff9500';  // Orange for option 2
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     try {
         // Upload the image to Cloudinary and get the result URL
         const imageUrl: any = await uploadToCloudinary();
-        return new Response( `these are the parameters${question}, ${option1}, ${option2}, ${option3}`, {
+        return new Response( `these are the parameters${question}, ${option1}, ${option2}, ${option3} and this is the image url: ${JSON.stringify(imageUrl)}`, {
             headers: {
                 'Content-Type': 'application/json',
             },
