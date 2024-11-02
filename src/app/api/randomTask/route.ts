@@ -7,7 +7,6 @@ import { tasks, options } from "@/app/db/tasks"; // Import tasks and options fro
 const getRandomItem = (array: string[]) => {
   return array[Math.floor(Math.random() * array.length)];
 };
-export const runtime = 'edge';
 // Handler for the API route
 export async function GET() {
   // Select one random task
