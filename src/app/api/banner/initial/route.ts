@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     try {
         // Upload the image to Cloudinary and get the result URL
         const imageUrl: any = await uploadToCloudinary();
-        return new Response(JSON.stringify({ imageUrl }), {
+        return new Response( `these are the parameters${question}, ${option1}, ${option2}, ${option3}`, {
             headers: {
                 'Content-Type': 'application/json',
             },
