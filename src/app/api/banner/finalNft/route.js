@@ -7,10 +7,6 @@ const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY;
 const PINATA_SECRET_API_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY;
 const PINATA_FILE_ENDPOINT = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
 
-export const config = {
-  runtime: 'edge',
-};
-
 // Function to upload image to Pinata
 const uploadToPinata = async (buffer) => {
   const formData = new FormData();
