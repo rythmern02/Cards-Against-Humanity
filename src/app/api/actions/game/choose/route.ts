@@ -184,10 +184,10 @@ export async function POST(req: NextRequest) {
       type: "action",
       icon: datam.uploadedImageUrl,
       /** describes the source of the action request */
-      title: task,
+      title: `How will you rate this Task: ${task} `,
       /** brief summary of the action to be performed */
       description:
-        "perform the above task with one of the options and click a picture while doing the task....",
+        "Your ratings will help us identify the best tasks, rank them effectively, and generate more similar tasks in the future.",
       /** button text rendered to the user */
       label: "string",
       /** UI state for the button being rendered to the user */
@@ -211,11 +211,6 @@ export async function POST(req: NextRequest) {
                   { label: "4 star", value:"4" },
                   { label: "5 star", value:"5" }
                 ],
-              },
-              {
-                type: "url",
-                name: "imageUrl",
-                label: "Image URL",
               },
             ],
           },

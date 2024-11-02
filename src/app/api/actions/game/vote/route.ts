@@ -1,49 +1,103 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  ACTIONS_CORS_HEADERS,
+  createActionHeaders,
+  NextActionPostRequest,
   CompletedAction,
-  ActionError
+  ActionError,
 } from "@solana/actions";
+import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 
-export async function GET(req: NextRequest) {
+// Set up headers, including CORS
+const headers = createActionHeaders();
+
+// Handle unsupported GET requests
+export const GET = async () => {
   return NextResponse.json({ message: "Method not supported" } as ActionError, {
     status: 403,
+    headers,
   });
-}
+};
 
-export const OPTIONS = POST;
+// Handle OPTIONS request for CORS
+export const OPTIONS = async () => NextResponse.json(null, { headers });
 
-export async function POST(req: NextRequest) {
+export const POST = async (req: NextRequest) => {
   try {
-    console.log("okay... Here we get started with the function....");
+    const { searchParams } = req.nextUrl;
+    const choice = searchParams.get("choice") || "";
+    const account = searchParams.get("account") || "";
 
-    let { searchParams } = req.nextUrl;
-    let choice = searchParams.get("choice") || "";
-    let account = searchParams.get("account") || "";
+    // Parse the incoming request body
+    const body: NextActionPostRequest = await req.json();
 
-    console.log("here the damnn thing starts......");
+    // Validate account input
+    let accountPubKey: PublicKey;
+    try {
+      accountPubKey = new PublicKey(body.account);
+    } catch {
+      throw 'Invalid "account" provided';
+    }
 
-    const response: CompletedAction = {
+    // Validate the signature
+    let signature: any;
+    try {
+      signature = body.signature;
+      if (!signature) throw "Invalid signature";
+    } catch {
+      throw 'Invalid "signature" provided';
+    }
+
+    // Set up Solana connection
+    const connection = new Connection(
+      process.env.SOLANA_RPC || clusterApiUrl("devnet")
+    );
+
+    // Confirm the transaction status
+    let status = await connection.getSignatureStatus(signature);
+    if (!status || !status.value) throw "Unknown signature status";
+
+    const confirmationStatus = status.value.confirmationStatus;
+    if (
+      confirmationStatus !== "confirmed" &&
+      confirmationStatus !== "finalized"
+    ) {
+      throw "Unable to confirm the transaction";
+    }
+
+    // Retrieve the transaction for verification
+    const transaction = await connection.getParsedTransaction(
+      signature,
+      "confirmed"
+    );
+
+    if (!transaction) {
+      throw "Transaction not found";
+    }
+
+    // Construct the successful response payload
+    const payload: CompletedAction = {
       type: "completed",
+      title: "Voila!",
       icon: "https://res.cloudinary.com/ducsu6916/image/upload/v1729534996/rjzl1f1c8yfko1stduvg.jpg",
-      title: "Voila!  ",
-      description: "Great you have Successfully minted the Nft of that task you 've performed!",
-      label: "this is RN"
+      label: "this is RN",
+      description:
+        `Great! You've successfully minted the NFT for the task you performed! ` +
+        `Transaction signature: ${signature}`,
     };
 
-    return NextResponse.json(response, {
-      headers: ACTIONS_CORS_HEADERS,
+    return NextResponse.json(payload, {
+      headers,
     });
   } catch (err) {
-    console.error("Error in POST /api/actions", err);
+    console.error("Error in POST /api/actions:", err);
 
-    let errorMessage = "An unknown error occurred";
-    if (typeof err === "string") errorMessage = err;
-    if (err instanceof Error) errorMessage = err.message;
+    let actionError: ActionError = { message: "An unknown error occurred" };
+    if (typeof err === "string") actionError.message = err;
+    else if (err instanceof Error) actionError.message = err.message;
 
-    return new Response(errorMessage, {
+    return NextResponse.json(actionError, {
       status: 400,
-      headers: ACTIONS_CORS_HEADERS,
+      headers,
     });
   }
-}
+};
