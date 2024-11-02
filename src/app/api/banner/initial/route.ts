@@ -1,116 +1,107 @@
-import { createCanvas } from 'canvas';
-import { v2 as cloudinary } from 'cloudinary';
-import { NextRequest } from 'next/server';
+import { NextRequest } from "next/server";
+import Sharp from "sharp";
+import { v2 as cloudinary } from "cloudinary";
 
 // Configure Cloudinary
 cloudinary.config({
-    cloud_name: "ducsu6916",
-    api_key: "254453765841711",
-    api_secret: "t-h1i9ls6zX-CQRy4d5brCWzh98",
+  cloud_name: "ducsu6916",
+  api_key: "254453765841711",
+  api_secret: "t-h1i9ls6zX-CQRy4d5brCWzh98",
 });
 
 export async function POST(req: NextRequest) {
-    try {
-        const { question, option1, option2, option3 } = await req.json();
-        
-        // Create the canvas with the banner
-        const canvas = createCanvas(800, 800);
-        const ctx = canvas.getContext('2d');
-        
-        // Dark gradient background
-        const gradient = ctx.createRadialGradient(
-            canvas.width / 2, canvas.height / 2, 100,
-            canvas.width / 2, canvas.height / 2, 400
+  try {
+    const { question, option1, option2, option3 } = await req.json();
+
+    // Create an SVG with the text and styling
+    const svgImage = `
+            <svg width="800" height="800" xmlns="http://www.w3.org/2000/svg">
+                <!-- Gradient Background -->
+                <defs>
+                    <radialGradient id="grad" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" style="stop-color:#2a0c63;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#4e048d;stop-opacity:1" />
+                    </radialGradient>
+                </defs>
+                
+                <!-- Background -->
+                <rect width="800" height="800" fill="url(#grad)"/>
+                
+                <!-- Question Text -->
+                <text x="400" y="100" 
+                    font-family="Arial" 
+                    font-size="40" 
+                    font-weight="bold" 
+                    fill="white" 
+                    text-anchor="middle">
+                    ${question}
+                </text>
+                
+                <!-- Options -->
+                <text x="400" y="300" 
+                    font-family="Arial" 
+                    font-size="36" 
+                    fill="#34c759" 
+                    text-anchor="middle">
+                    ${option1}
+                </text>
+                
+                <text x="400" y="400" 
+                    font-family="Arial" 
+                    font-size="36" 
+                    fill="#ff9500" 
+                    text-anchor="middle">
+                    ${option2}
+                </text>
+                
+                <text x="400" y="500" 
+                    font-family="Arial" 
+                    font-size="36" 
+                    fill="#ff2d55" 
+                    text-anchor="middle">
+                    ${option3}
+                </text>
+            </svg>
+        `;
+
+    // Convert SVG to PNG using Sharp
+    const buffer = await Sharp(Buffer.from(svgImage)).png().toBuffer();
+
+    // Upload to Cloudinary
+    const uploadToCloudinary = () => {
+      return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "banners" },
+          (error: any, result: any) => {
+            if (error) reject(error);
+            else resolve(result.url);
+          }
         );
-        gradient.addColorStop(0, '#2a0c63');
-        gradient.addColorStop(1, '#4e048d');
-        
-        // Fill background with gradient
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Word wrap function for long questions
-        const wrapText= (text: string, maxWidth: number) =>{
-            const words = text.split(' ');
-            let lines = [];
-            let currentLine = words[0];
+        uploadStream.end(buffer);
+      });
+    };
 
-            for (let i = 1; i < words.length; i++) {
-                const word = words[i];
-                const width = ctx.measureText(currentLine + " " + word).width;
-                if (width < maxWidth) {
-                    currentLine += " " + word;
-                } else {
-                    lines.push(currentLine);
-                    currentLine = word;
-                }
-            }
-            lines.push(currentLine);
-            return lines;
-        }
-        
-        // Draw question text
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 40px sans-serif';  // Using system sans-serif font
-        ctx.textAlign = 'center';
-        
-        // Draw wrapped question text
-        const questionLines = wrapText(question, 700);
-        let y = 100;
-        for (const line of questionLines) {
-            ctx.fillText(line, canvas.width / 2, y);
-            y += 50;
-        }
-
-        // Draw the options
-        ctx.font = '36px sans-serif';  // Using system sans-serif font
-
-        ctx.fillStyle = '#34c759';  // Green
-        ctx.fillText(option1, canvas.width / 2, 300);
-
-        ctx.fillStyle = '#ff9500';  // Orange
-        ctx.fillText(option2, canvas.width / 2, 400);
-
-        ctx.fillStyle = '#ff2d55';  // Red
-        ctx.fillText(option3, canvas.width / 2, 500);
-
-        // Convert canvas to buffer
-        const buffer = canvas.toBuffer('image/png');
-
-        // Function to upload image to Cloudinary
-        const uploadToCloudinary = () => {
-            return new Promise((resolve, reject) => {
-                const uploadStream = cloudinary.uploader.upload_stream(
-                    { folder: 'banners' },
-                    (error: any, result: any) => {
-                        if (error) reject(error);
-                        else resolve(result.url);
-                    }
-                );
-                uploadStream.end(buffer);
-            });
-        };
-
-        const imageUrl: any = await uploadToCloudinary();
-        return new Response(JSON.stringify({ imageUrl }), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-    } catch (error) {
-        console.error('Error:', error);
-        return new Response(
-            JSON.stringify({ 
-                error: 'Failed to process request',
-                details: error instanceof Error ? error.message : 'Unknown error'
-            }), {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                status: 500,
-            }
-        );
-    }
+    const imageUrl: any = await uploadToCloudinary();
+    return new Response(JSON.stringify({ imageUrl }), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    return new Response(
+      JSON.stringify({
+        error: "Failed to process request",
+        details: error instanceof Error ? error.message : "Unknown error",
+      }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        status: 500,
+      }
+    );
+  }
 }
 /*whenever a person comes clicks on the start button thereafter he/she gets automatically gets an random task with three options and chooses one afterthat, 
     then he/she is asked the url of the image that he performed action for and prompt the task is completed,
