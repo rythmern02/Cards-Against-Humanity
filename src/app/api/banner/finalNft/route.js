@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { ImageResponse } from '@vercel/og';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -8,13 +8,14 @@ const PINATA_SECRET_API_KEY = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY;
 const PINATA_FILE_ENDPOINT = 'https://api.pinata.cloud/pinning/pinFileToIPFS';
 
 // Function to upload image to Pinata
+// Function to upload image to Pinata
 const uploadToPinata = async (buffer) => {
   const formData = new FormData();
-  formData.append('file', new Blob([buffer]), 'image.png');
+  formData.append('file', Buffer.from(buffer), 'image.png');
 
   const response = await axios.post(PINATA_FILE_ENDPOINT, formData, {
     headers: {
-      'Content-Type': `multipart/form-data; boundary=${formData.getBoundary()}`,
+      ...formData.getHeaders(),
       pinata_api_key: PINATA_API_KEY,
       pinata_secret_api_key: PINATA_SECRET_API_KEY,
     },
@@ -89,7 +90,7 @@ export async function POST(req) {
     return NextResponse.json({ uploadedImageUrl });
   } catch (error) {
     console.error('Failed to process request:', error);
-    return new NextResponse('Failed to process request' , {
+    return new NextResponse('Failed to process request', {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
