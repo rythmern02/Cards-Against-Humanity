@@ -1,7 +1,6 @@
 import { createCanvas, registerFont } from 'canvas';
 import { v2 as cloudinary } from 'cloudinary';
 import { NextRequest } from 'next/server';
-import path from 'path';
 
 registerFont(('./public/fonts/Roboto.ttf'), { family: 'Roboto' });
 

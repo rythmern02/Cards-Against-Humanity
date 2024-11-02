@@ -2,7 +2,7 @@
 const nextConfig = {
     experimental: {
      outputFileTracingIncludes: {
-       './src/app/api/code/route': ['./public/fonts/**/*'],
+       './src/app/api/banner/initial/route': ['./public/fonts/**/*'],
       },
     },
 };
