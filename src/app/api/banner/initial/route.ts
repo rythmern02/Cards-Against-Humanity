@@ -100,7 +100,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export const runtime = 'edge';
 /*whenever a person comes clicks on the start button thereafter he/she gets automatically gets an random task with three options and chooses one afterthat, 
     then he/she is asked the url of the image that he performed action for and prompt the task is completed,
         thereAfter he/she gets a chance to mint an Nft of that task with the image uploaded,
