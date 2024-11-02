@@ -3,7 +3,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import { NextRequest } from 'next/server';
 import path from 'path';
 
-registerFont(('./public/fonts/roboto.ttf'), { family: 'Roboto' });
+registerFont(('./public/fonts/Roboto.ttf'), { family: 'Roboto' });
 
 // Configure Cloudinary with your credentials
 cloudinary.config({
