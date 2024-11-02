@@ -15,50 +15,55 @@ export async function POST(req: NextRequest) {
 
     // Create an SVG with the text and styling
     const svgImage = `
-            <svg width="800" height="800" xmlns="http://www.w3.org/2000/svg">
-                <!-- Gradient Background -->
-                <defs>
-                    <radialGradient id="grad" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" style="stop-color:#2a0c63;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#4e048d;stop-opacity:1" />
-                    </radialGradient>
-                </defs>
-                
-                <!-- Background -->
-                <rect width="800" height="800" fill="url(#grad)"/>
-                
-                <!-- Question Text -->
-                <text x="400" y="100" 
-                    font-size="40" 
-                    font-weight="bold" 
-                    fill="white" 
-                    text-anchor="middle">
-                    ${question}
-                </text>
-                
-                <!-- Options -->
-                <text x="400" y="300"  
-                    font-size="36" 
-                    fill="#34c759" 
-                    text-anchor="middle">
-                    ${option1}
-                </text>
-                
-                <text x="400" y="400" 
-                    font-size="36" 
-                    fill="#ff9500" 
-                    text-anchor="middle">
-                    ${option2}
-                </text>
-                
-                <text x="400" y="500" 
-                    font-size="36" 
-                    fill="#ff2d55" 
-                    text-anchor="middle">
-                    ${option3}
-                </text>
-            </svg>
-        `;
+    <svg width="800" height="800" xmlns="http://www.w3.org/2000/svg">
+        <!-- Gradient Background -->
+        <defs>
+            <radialGradient id="grad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" style="stop-color:#2a0c63;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#4e048d;stop-opacity:1" />
+            </radialGradient>
+        </defs>
+        
+        <!-- Background -->
+        <rect width="800" height="800" fill="url(#grad)"/>
+        
+        <!-- Question Text -->
+        <text x="400" y="100" 
+            font-size="40" 
+            font-family="Arial, Helvetica, Sans-Serif" 
+            font-weight="bold" 
+            fill="white" 
+            text-anchor="middle">
+            ${question}
+        </text>
+        
+        <!-- Options -->
+        <text x="400" y="300"  
+            font-size="36" 
+            font-family="Arial, Helvetica, Sans-Serif" 
+            fill="#34c759" 
+            text-anchor="middle">
+            ${option1}
+        </text>
+        
+        <text x="400" y="400" 
+            font-size="36" 
+            font-family="Arial, Helvetica, Sans-Serif" 
+            fill="#ff9500" 
+            text-anchor="middle">
+            ${option2}
+        </text>
+        
+        <text x="400" y="500" 
+            font-size="36" 
+            font-family="Arial, Helvetica, Sans-Serif" 
+            fill="#ff2d55" 
+            text-anchor="middle">
+            ${option3}
+        </text>
+    </svg>
+`;
+
 
     // Convert SVG to PNG using Sharp
     const buffer = await Sharp(Buffer.from(svgImage)).png().toBuffer();
