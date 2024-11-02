@@ -1,12 +1,15 @@
-import { createCanvas } from 'canvas';
+import { createCanvas, registerFont } from 'canvas';
 import { v2 as cloudinary } from 'cloudinary';
 import { NextRequest } from 'next/server';
+import path from 'path';
+
+registerFont(path.join(process.cwd(), 'public/fonts/roboto.ttf'), { family: 'Roboto' });
 
 // Configure Cloudinary with your credentials
 cloudinary.config({
-  cloud_name: "ducsu6916",
-  api_key: "254453765841711",
-  api_secret: "t-h1i9ls6zX-CQRy4d5brCWzh98",
+    cloud_name: "ducsu6916",
+    api_key: "254453765841711",
+    api_secret: "t-h1i9ls6zX-CQRy4d5brCWzh98",
 });
 
 export async function POST(req: NextRequest) {
@@ -15,7 +18,7 @@ export async function POST(req: NextRequest) {
     // Create the canvas with the banner
     const canvas = createCanvas(800, 800);
     const ctx = canvas.getContext('2d');
-
+    
     // Dark gradient background
     const gradient = ctx.createRadialGradient(
         canvas.width / 2, canvas.height / 2, 100,
@@ -23,20 +26,20 @@ export async function POST(req: NextRequest) {
     );
     gradient.addColorStop(0, '#2a0c63');
     gradient.addColorStop(1, '#4e048d');
-
+    
     // Fill background with gradient
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+    
     // Draw question text
     ctx.fillStyle = '#ffffff';  // White text for question
-    ctx.font = 'bold 40px sans-serif';
+    ctx.font = 'bold 40px Roboto';
     ctx.textAlign = 'center';
     ctx.fillText(question, canvas.width / 2, 100);
 
     // Draw the options
     ctx.fillStyle = '#34c759';  // Green for option 1
-    ctx.font = '36px sans-serif';
+    ctx.font = '36px Roboto';
     ctx.fillText(option1, canvas.width / 2, 300);
 
     ctx.fillStyle = '#ff9500';  // Orange for option 2
