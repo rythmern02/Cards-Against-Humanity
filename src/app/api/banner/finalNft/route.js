@@ -86,10 +86,10 @@ export async function POST(req) {
     const uploadedImageUrl = await uploadToPinata(buffer);
 
     // Respond with the Pinata URL of the generated image
-    return NextResponse.json({ imageUrl: uploadedImageUrl });
+    return NextResponse.json({ uploadedImageUrl });
   } catch (error) {
     console.error('Failed to process request:', error);
-    return new NextResponse(JSON.stringify({ error: 'Failed to process request' }), {
+    return new NextResponse('Failed to process request' , {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
