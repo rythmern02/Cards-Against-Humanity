@@ -89,9 +89,6 @@ export async function POST(req: NextRequest) {
 
     console.log("Random task fetched: ", datam);
 
-    let { searchParams } = req.nextUrl;
-    let actionState = searchParams.get("state") || "";
-
     // Convert the account string to a PublicKey object
     const sender = new PublicKey(account);
     console.log("Sender's public key:", sender);
@@ -99,7 +96,7 @@ export async function POST(req: NextRequest) {
     const connection = new Connection(
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
     );
-    let amount = 0.0001;
+    let amount = 0.01;
     let toPubkey = new PublicKey(
       "8SM1A6wNgreszhF8U7Fp8NHqmgT8euMZFfUvv5wCaYfL"
     );
