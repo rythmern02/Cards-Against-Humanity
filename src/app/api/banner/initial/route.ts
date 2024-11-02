@@ -29,7 +29,6 @@ export async function POST(req: NextRequest) {
                 
                 <!-- Question Text -->
                 <text x="400" y="100" 
-                    font-family="Arial" 
                     font-size="40" 
                     font-weight="bold" 
                     fill="white" 
@@ -38,8 +37,7 @@ export async function POST(req: NextRequest) {
                 </text>
                 
                 <!-- Options -->
-                <text x="400" y="300" 
-                    font-family="Arial" 
+                <text x="400" y="300"  
                     font-size="36" 
                     fill="#34c759" 
                     text-anchor="middle">
@@ -47,7 +45,6 @@ export async function POST(req: NextRequest) {
                 </text>
                 
                 <text x="400" y="400" 
-                    font-family="Arial" 
                     font-size="36" 
                     fill="#ff9500" 
                     text-anchor="middle">
@@ -55,7 +52,6 @@ export async function POST(req: NextRequest) {
                 </text>
                 
                 <text x="400" y="500" 
-                    font-family="Arial" 
                     font-size="36" 
                     fill="#ff2d55" 
                     text-anchor="middle">
