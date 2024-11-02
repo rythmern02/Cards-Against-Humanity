@@ -1,13 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-    compiler: {
-        emotion: true
-    },
-    experimental: {
-     outputFileTracingIncludes: {
-       '/api/banner/initial': ['./public/fonts/**/*'],
-      },
-    },
-};
+const nextConfig = {};
 
 export default nextConfig;

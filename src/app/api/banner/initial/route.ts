@@ -1,10 +1,8 @@
-import { createCanvas, registerFont } from 'canvas';
+import { createCanvas } from 'canvas';
 import { v2 as cloudinary } from 'cloudinary';
 import { NextRequest } from 'next/server';
 
-registerFont(('./public/fonts/Roboto.ttf'), { family: 'Roboto' });
-
-// Configure Cloudinary with your credentials
+// Configure Cloudinary
 cloudinary.config({
     cloud_name: "ducsu6916",
     api_key: "254453765841711",
@@ -12,80 +10,108 @@ cloudinary.config({
 });
 
 export async function POST(req: NextRequest) {
-    const { question, option1, option2, option3 } = await req.json();
-    
-    // Create the canvas with the banner
-    const canvas = createCanvas(800, 800);
-    const ctx = canvas.getContext('2d');
-    
-    // Dark gradient background
-    const gradient = ctx.createRadialGradient(
-        canvas.width / 2, canvas.height / 2, 100,
-        canvas.width / 2, canvas.height / 2, 400
-    );
-    gradient.addColorStop(0, '#2a0c63');
-    gradient.addColorStop(1, '#4e048d');
-    
-    // Fill background with gradient
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw question text
-    ctx.fillStyle = '#ffffff';  // White text for question
-    ctx.font = 'bold 40px Roboto';
-    ctx.textAlign = 'center';
-    ctx.fillText(question, canvas.width / 2, 100);
-
-    // Draw the options
-    ctx.fillStyle = '#34c759';  // Green for option 1
-    ctx.font = '36px Roboto';
-    ctx.fillText(option1, canvas.width / 2, 300);
-
-    ctx.fillStyle = '#ff9500';  // Orange for option 2
-    ctx.fillText(option2, canvas.width / 2, 400);
-
-    ctx.fillStyle = '#ff2d55';  // Red for option 3
-    ctx.fillText(option3, canvas.width / 2, 500);
-
-    // Convert canvas to buffer
-    const buffer = canvas.toBuffer('image/png');
-
-    // Function to upload image to Cloudinary
-    const uploadToCloudinary = () => {
-        return new Promise((resolve, reject) => {
-            const uploadStream = cloudinary.uploader.upload_stream(
-                { folder: 'banners' },  // Optional: Save to a specific folder in Cloudinary
-                (error: any, result: any) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        resolve(result.url);  // Get the URL from Cloudinary
-                    }
-                }
-            );
-            uploadStream.end(buffer);  // Send the image buffer to Cloudinary
-        });
-    };
-
     try {
-        // Upload the image to Cloudinary and get the result URL
+        const { question, option1, option2, option3 } = await req.json();
+        
+        // Create the canvas with the banner
+        const canvas = createCanvas(800, 800);
+        const ctx = canvas.getContext('2d');
+        
+        // Dark gradient background
+        const gradient = ctx.createRadialGradient(
+            canvas.width / 2, canvas.height / 2, 100,
+            canvas.width / 2, canvas.height / 2, 400
+        );
+        gradient.addColorStop(0, '#2a0c63');
+        gradient.addColorStop(1, '#4e048d');
+        
+        // Fill background with gradient
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Word wrap function for long questions
+        const wrapText= (text: string, maxWidth: number) =>{
+            const words = text.split(' ');
+            let lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                const word = words[i];
+                const width = ctx.measureText(currentLine + " " + word).width;
+                if (width < maxWidth) {
+                    currentLine += " " + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+        
+        // Draw question text
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 40px sans-serif';  // Using system sans-serif font
+        ctx.textAlign = 'center';
+        
+        // Draw wrapped question text
+        const questionLines = wrapText(question, 700);
+        let y = 100;
+        for (const line of questionLines) {
+            ctx.fillText(line, canvas.width / 2, y);
+            y += 50;
+        }
+
+        // Draw the options
+        ctx.font = '36px sans-serif';  // Using system sans-serif font
+
+        ctx.fillStyle = '#34c759';  // Green
+        ctx.fillText(option1, canvas.width / 2, 300);
+
+        ctx.fillStyle = '#ff9500';  // Orange
+        ctx.fillText(option2, canvas.width / 2, 400);
+
+        ctx.fillStyle = '#ff2d55';  // Red
+        ctx.fillText(option3, canvas.width / 2, 500);
+
+        // Convert canvas to buffer
+        const buffer = canvas.toBuffer('image/png');
+
+        // Function to upload image to Cloudinary
+        const uploadToCloudinary = () => {
+            return new Promise((resolve, reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    { folder: 'banners' },
+                    (error: any, result: any) => {
+                        if (error) reject(error);
+                        else resolve(result.url);
+                    }
+                );
+                uploadStream.end(buffer);
+            });
+        };
+
         const imageUrl: any = await uploadToCloudinary();
-        return new Response( `and here is the context: ${ctx} and font : ${ctx.font} ${JSON.stringify(imageUrl)}`, {
+        return new Response(JSON.stringify({ imageUrl }), {
             headers: {
                 'Content-Type': 'application/json',
             },
         });
     } catch (error) {
-        return new Response(JSON.stringify({ error: 'Failed to upload image' }), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            status: 500,
-        });
+        console.error('Error:', error);
+        return new Response(
+            JSON.stringify({ 
+                error: 'Failed to process request',
+                details: error instanceof Error ? error.message : 'Unknown error'
+            }), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                status: 500,
+            }
+        );
     }
 }
-
-
 /*whenever a person comes clicks on the start button thereafter he/she gets automatically gets an random task with three options and chooses one afterthat, 
     then he/she is asked the url of the image that he performed action for and prompt the task is completed,
         thereAfter he/she gets a chance to mint an Nft of that task with the image uploaded,
