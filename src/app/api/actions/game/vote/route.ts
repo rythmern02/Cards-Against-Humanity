@@ -1,16 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   createActionHeaders,
-  NextActionPostRequest,
   CompletedAction,
   ActionError,
 } from "@solana/actions";
-import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
+import {
+  clusterApiUrl,
+  Connection,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+  VersionedMessage,
+  VersionedTransaction,
+  TransactionMessage,
+} from "@solana/web3.js";
+import {
+  createUmi,
+  generateSigner,
+  signerIdentity,
+  publicKey,
+  createNoopSigner,
+} from "@metaplex-foundation/umi";
+import { toWeb3JsKeypair } from "@metaplex-foundation/umi-web3js-adapters";
 
 // Set up headers, including CORS
 const headers = createActionHeaders();
 
-// Handle unsupported GET requests
 export const GET = async () => {
   return NextResponse.json({ message: "Method not supported" } as ActionError, {
     status: 403,
@@ -18,76 +33,65 @@ export const GET = async () => {
   });
 };
 
-// Handle OPTIONS request for CORS
 export const OPTIONS = async () => NextResponse.json(null, { headers });
 
 export const POST = async (req: NextRequest) => {
   try {
     const { searchParams } = req.nextUrl;
-    const choice = searchParams.get("choice") || "";
-    const account = searchParams.get("account") || "";
+    const account = searchParams.get("account") || "";  // User's public key
 
-    // Parse the incoming request body
-    // const body: NextActionPostRequest = await req.json();
+    // Set up connection and endpoints
+    const RPC_ENDPOINT = "https://api.devnet.solana.com";
+    const connection = new Connection(RPC_ENDPOINT);
 
-    // Validate account input
-    // let accountPubKey: PublicKey;
-    // try {
-    //   accountPubKey = new PublicKey(body.account);
-    // } catch {
-    //   throw 'Invalid "account" provided';
-    // }
+    // Set up sender and signer
+    const sender = new PublicKey(account);
+    const signer = createNoopSigner(publicKey(sender));
 
-    // Validate the signature
-    // let signature: any;
-    // try {
-    //   signature = body.signature;
-    //   if (!signature) throw "Invalid signature";
-    // } catch {
-    //   throw 'Invalid "signature" provided';
-    // }
+    const umi = createUmi()
+      .use(signerIdentity(signer));
 
-    // Set up Solana connection
-    // const connection = new Connection(
-    //   process.env.SOLANA_RPC || clusterApiUrl("devnet")
-    // );
+    // Destination wallet
+    const destinationPublicKey = new PublicKey("8SM1A6wNgreszhF8U7Fp8NHqmgT8euMZFfUvv5wCaYfL");
 
-    // Confirm the transaction status
-    // let status = await connection.getSignatureStatus(signature);
-    // if (!status || !status.value) throw "Unknown signature status";
+    // Get recent blockhash for the transaction
+    const { blockhash } = await connection.getLatestBlockhash();
 
-    // const confirmationStatus = status.value.confirmationStatus;
-    // if (
-      // confirmationStatus !== "confirmed" &&
-      // confirmationStatus !== "finalized"
-    // ) {
-      // throw "Unable to confirm the transaction";
-    // }
+    // Create a transfer transaction
+    const transferTransaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: sender,
+        toPubkey: destinationPublicKey,
+        lamports: 0.0001 * 1e9,  // 0.0001 SOL in lamports
+      })
+    );
 
-    // Retrieve the transaction for verification
-    // const transaction = await connection.getParsedTransaction(
-    //   signature,
-    //   "confirmed"
-    // );
+    // Create a Versioned Message
+    const message = new TransactionMessage({
+      payerKey: sender,
+      recentBlockhash: blockhash,
+      instructions: transferTransaction.instructions,
+    }).compileToV0Message();
 
-    // if (!transaction) {
-    //   throw "Transaction not found";
-    // }
+    const transaction = new VersionedTransaction(message);
+
+    // Convert the signer keypair to a Web3.js Keypair and sign the transaction
+    const senderKeypair = toWeb3JsKeypair(generateSigner(umi));
+    transaction.sign([senderKeypair]);
+
+    // Send and confirm the transaction
+    const signature = await connection.sendTransaction(transaction);
 
     // Construct the successful response payload
     const payload: CompletedAction = {
       type: "completed",
-      title: "Voila!",
+      title: "Transaction Successful",
       icon: "https://res.cloudinary.com/ducsu6916/image/upload/v1729534996/rjzl1f1c8yfko1stduvg.jpg",
-      label: "this is RN",
-      description:
-        `Great! You've successfully minted the NFT for the task you performed! ` +
-        `And voted for the tasks`,
+      label: "Transaction Complete",
+      description: `Successfully transferred 0.0001 SOL to ${destinationPublicKey.toString()}. Transaction signature: ${signature}`,
     };
 
-    return NextResponse.json(payload, {
-      headers,
-    });
+    return NextResponse.json(payload, { headers });
   } catch (err) {
     console.error("Error in POST /api/actions:", err);
 
