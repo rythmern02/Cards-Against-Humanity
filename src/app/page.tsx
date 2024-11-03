@@ -103,10 +103,10 @@ export default function Home() {
                 </p>
                 <div className="h-40 relative overflow-hidden rounded-md">
                   <Image
-                    src={`/placeholder.svg?height=300&width=400&text=${step}`}
+                    src={`/step${index + 1}.png`}
                     alt={`${step} illustration`}
                     layout="fill"
-                    objectFit="cover"
+                    objectFit="contain"
                   />
                 </div>
               </div>
