@@ -125,9 +125,9 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
-              "I drink to forget _____.",
-              "What's that smell?",
-              "I got 99 problems but _____ ain't one.",
+              "Pretend like you are a Monnster, while _____.",
+              "Do your best evil laugh",
+              "While laughing eat a spoonful of ______",
               "______ + ______ = ______.",
             ].map((task, index) => (
               <div
