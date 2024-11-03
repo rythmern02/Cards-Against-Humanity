@@ -33,6 +33,8 @@ export const POST = async (req: NextRequest) => {
   try {
     const { searchParams } = req.nextUrl;
     const account = searchParams.get("account") || ""; // User's public key
+    const task = searchParams.get("task") || ""; 
+    const choice = searchParams.get("choice") || ""; 
     console.log(account, "this is the signature: ");
     const sender = new PublicKey(account);
     console.log("Sender's public key:", sender);
@@ -43,10 +45,7 @@ export const POST = async (req: NextRequest) => {
       "8SM1A6wNgreszhF8U7Fp8NHqmgT8euMZFfUvv5wCaYfL"
     );
 
-    // const minimumBalance = await connection.getMinimumBalanceForRentExemption(
-    //   0
-    // );
-    let message = "Hello from Solana!";
+    let message = `Task: ${task}, Rated: ${choice} `;
 
     // Memo instruction to include a message
     const memoInstruction = new TransactionInstruction({
@@ -70,19 +69,6 @@ export const POST = async (req: NextRequest) => {
       lastValidBlockHeight,
     }).add(transferSolInstruction, memoInstruction);
 
-    // // Send and confirm the transaction
-    // const signature: any = await connection.sendTransaction(transaction);
-
-    // Construct the successful response payload
-
-    // console.log("this was the transaction : ", transaction);
-    // const payload = {
-    //   type: "completed",
-    //   title: "Transaction Successful",
-    //   icon: "https://res.cloudinary.com/ducsu6916/image/upload/v1729534996/rjzl1f1c8yfko1stduvg.jpg",
-    //   label: "Transaction Complete",
-    //   description: `Successfully transferred 0.0001 SOL to toString()}. Transaction signature: ${transaction}`
-    // };
 
     const payload: ActionPostResponse = await createPostResponse({
       fields: {

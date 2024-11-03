@@ -200,7 +200,7 @@ export async function POST(req: NextRequest) {
         actions: [
           {
             type: "post",
-            href: `/api/actions/game/vote?choice={choice}&account=${account}`,
+            href: `/api/actions/game/vote?choice={choice}&account=${account}&task=${task}`,
             label: "Choose",
             parameters: [
               {
