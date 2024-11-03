@@ -177,7 +177,8 @@ export async function POST(req: NextRequest) {
 
     // Convert umi keypair to web3.js keypair
     const mintKeypair = toWeb3JsKeypair(mint)
-    transactionv0.sign([mintKeypair])
+    const signature = transactionv0.sign([mintKeypair])
+    console.log("this is the signature")
   
 
     const hello: Action = {
@@ -197,7 +198,7 @@ export async function POST(req: NextRequest) {
         actions: [
           {
             type: "post",
-            href: `/api/actions/game/vote?choice={choice}&account=${account}`,
+            href: `/api/actions/game/vote?choice={choice}&account=${account}&signature=${signature}`,
             label: "Choose",
             parameters: [
               {
