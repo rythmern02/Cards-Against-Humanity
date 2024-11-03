@@ -76,7 +76,7 @@ export const POST = async (req: NextRequest) => {
     // const signature = await connection.sendTransaction(transaction);
 
     // Construct the successful response payload
-    const transaction = await connection.getParsedTransaction("51QboVxEA6BXLGCUB3pag1TY6gutjepuDu76bRqKYDEDVBSwxBG6oqD4y5L9JRkwgigLTxHwccwJ6EZ2UvfwaMUK","confirmed");
+    const transaction = await connection.getParsedTransaction(signature,"confirmed");
 
     console.log("this was the transaction : ", transaction)
     const payload: CompletedAction = {
