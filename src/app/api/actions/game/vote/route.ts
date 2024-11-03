@@ -47,40 +47,42 @@ export const POST = async (req: NextRequest) => {
     const connection = new Connection(
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
     );
-    let amount = 0.01;
-    let toPubkey = new PublicKey(
-      "8SM1A6wNgreszhF8U7Fp8NHqmgT8euMZFfUvv5wCaYfL"
-    );
+    // let amount = 0.01;
+    // let toPubkey = new PublicKey(
+    //   "8SM1A6wNgreszhF8U7Fp8NHqmgT8euMZFfUvv5wCaYfL"
+    // );
 
-    const minimumBalance = await connection.getMinimumBalanceForRentExemption(
-      0
-    );
+    // const minimumBalance = await connection.getMinimumBalanceForRentExemption(
+    //   0
+    // );
 
-    const transferSolInstruction = SystemProgram.transfer({
-      fromPubkey: sender, // Corrected here
-      toPubkey: toPubkey,
-      lamports: amount * LAMPORTS_PER_SOL,
-    });
+    // const transferSolInstruction = SystemProgram.transfer({
+    //   fromPubkey: sender, // Corrected here
+    //   toPubkey: toPubkey,
+    //   lamports: amount * LAMPORTS_PER_SOL,
+    // });
 
-    const { blockhash, lastValidBlockHeight } =
-      await connection.getLatestBlockhash();
+    // const { blockhash, lastValidBlockHeight } =
+    //   await connection.getLatestBlockhash();
 
-    const transaction: any = new Transaction({
-      feePayer: sender, // Corrected here
-      blockhash,
-      lastValidBlockHeight,
-    }).add(transferSolInstruction);
+    // const transaction: any = new Transaction({
+    //   feePayer: sender, // Corrected here
+    //   blockhash,
+    //   lastValidBlockHeight,
+    // }).add(transferSolInstruction);
 
-    // Send and confirm the transaction
-    const signature = await connection.sendTransaction(transaction);
+    // // Send and confirm the transaction
+    // const signature = await connection.sendTransaction(transaction);
 
     // Construct the successful response payload
+    const transaction = await connection.getParsedTransaction("confirmed");
+    console.log("this was the transaction : ", transaction)
     const payload: CompletedAction = {
       type: "completed",
       title: "Transaction Successful",
       icon: "https://res.cloudinary.com/ducsu6916/image/upload/v1729534996/rjzl1f1c8yfko1stduvg.jpg",
       label: "Transaction Complete",
-      description: `Successfully transferred 0.0001 SOL to toString()}. Transaction signature: ${signature}`
+      description: `Successfully transferred 0.0001 SOL to toString()}. Transaction signature: ${transaction}`
     };
 
     return NextResponse.json(payload, { headers });
