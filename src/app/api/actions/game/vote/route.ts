@@ -28,15 +28,15 @@ export const POST = async (req: NextRequest) => {
     const account = searchParams.get("account") || "";
 
     // Parse the incoming request body
-    const body: NextActionPostRequest = await req.json();
+    // const body: NextActionPostRequest = await req.json();
 
     // Validate account input
-    let accountPubKey: PublicKey;
-    try {
-      accountPubKey = new PublicKey(body.account);
-    } catch {
-      throw 'Invalid "account" provided';
-    }
+    // let accountPubKey: PublicKey;
+    // try {
+    //   accountPubKey = new PublicKey(body.account);
+    // } catch {
+    //   throw 'Invalid "account" provided';
+    // }
 
     // Validate the signature
     // let signature: any;
@@ -48,9 +48,9 @@ export const POST = async (req: NextRequest) => {
     // }
 
     // Set up Solana connection
-    const connection = new Connection(
-      process.env.SOLANA_RPC || clusterApiUrl("devnet")
-    );
+    // const connection = new Connection(
+    //   process.env.SOLANA_RPC || clusterApiUrl("devnet")
+    // );
 
     // Confirm the transaction status
     // let status = await connection.getSignatureStatus(signature);
