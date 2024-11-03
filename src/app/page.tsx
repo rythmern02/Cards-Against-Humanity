@@ -93,11 +93,11 @@ export default function Home() {
                     : "animate-float-slower"
                 }`}
               >
-                <h3
+                <h2
                   className={`${robotoMono.className} text-2xl font-bold mb-4`}
                 >
                   {step}
-                </h3>
+                </h2>
                 <p className="text-gray-300 mb-4">
                   Step {index + 1}: {step}
                 </p>
