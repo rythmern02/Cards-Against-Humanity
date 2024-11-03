@@ -46,9 +46,7 @@ export const POST = async (req: NextRequest) => {
     const sender = new PublicKey(account);
     console.log("Sender's public key:", sender);
 
-    const connection = new Connection(
-      process.env.SOLANA_RPC! || clusterApiUrl("devnet")
-    );
+    const connection = new Connection(clusterApiUrl("devnet"));
     let amount = 0.01;
     let toPubkey = new PublicKey(
       "8SM1A6wNgreszhF8U7Fp8NHqmgT8euMZFfUvv5wCaYfL"
@@ -74,7 +72,7 @@ export const POST = async (req: NextRequest) => {
     }).add(transferSolInstruction);
 
     // // Send and confirm the transaction
-    const signature: any = await connection.sendTransaction(transaction);
+    // const signature: any = await connection.sendTransaction(transaction);
 
     // Construct the successful response payload
 
@@ -91,9 +89,8 @@ export const POST = async (req: NextRequest) => {
       fields: {
         type: "transaction",
         transaction: transaction,
-        },
       },
-    );
+    });
 
     return NextResponse.json(payload, { headers });
   } catch (err) {
