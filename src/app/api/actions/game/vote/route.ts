@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   createActionHeaders,
-  CompletedAction,
   ActionError,
   ActionPostResponse,
   createPostResponse,
+  MEMO_PROGRAM_ID,
 } from "@solana/actions";
 import {
   clusterApiUrl,
@@ -12,19 +12,10 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
-  VersionedMessage,
-  VersionedTransaction,
-  TransactionMessage,
   LAMPORTS_PER_SOL,
+  TransactionInstruction,
 } from "@solana/web3.js";
-import {
-  createUmi,
-  generateSigner,
-  signerIdentity,
-  publicKey,
-  createNoopSigner,
-} from "@metaplex-foundation/umi";
-import { toWeb3JsKeypair } from "@metaplex-foundation/umi-web3js-adapters";
+MEMO_PROGRAM_ID;
 
 // Set up headers, including CORS
 const headers = createActionHeaders();
@@ -47,7 +38,7 @@ export const POST = async (req: NextRequest) => {
     console.log("Sender's public key:", sender);
 
     const connection = new Connection(clusterApiUrl("devnet"));
-    let amount = 0.01;
+    let amount = 0.001;
     let toPubkey = new PublicKey(
       "8SM1A6wNgreszhF8U7Fp8NHqmgT8euMZFfUvv5wCaYfL"
     );
@@ -55,6 +46,14 @@ export const POST = async (req: NextRequest) => {
     // const minimumBalance = await connection.getMinimumBalanceForRentExemption(
     //   0
     // );
+    let message = "Hello from Solana!";
+
+    // Memo instruction to include a message
+    const memoInstruction = new TransactionInstruction({
+      keys: [],
+      programId: new PublicKey(MEMO_PROGRAM_ID), // Using the MEMO_PROGRAM_ID
+      data: Buffer.from(message), // Convert the message string to a Buffer
+    });
 
     const transferSolInstruction = SystemProgram.transfer({
       fromPubkey: sender, // Corrected here
@@ -69,7 +68,7 @@ export const POST = async (req: NextRequest) => {
       feePayer: sender, // Corrected here
       blockhash,
       lastValidBlockHeight,
-    }).add(transferSolInstruction);
+    }).add(transferSolInstruction, memoInstruction);
 
     // // Send and confirm the transaction
     // const signature: any = await connection.sendTransaction(transaction);
