@@ -3,6 +3,8 @@ import {
   createActionHeaders,
   CompletedAction,
   ActionError,
+  ActionPostResponse,
+  createPostResponse,
 } from "@solana/actions";
 import {
   clusterApiUrl,
@@ -39,53 +41,59 @@ export const OPTIONS = async () => NextResponse.json(null, { headers });
 export const POST = async (req: NextRequest) => {
   try {
     const { searchParams } = req.nextUrl;
-    const account = searchParams.get("account") || "";  // User's public key
-    const signature = searchParams.get("signature") || "";
-    console.log(account, "this is the signature: ", signature);
+    const account = searchParams.get("account") || ""; // User's public key
+    console.log(account, "this is the signature: ");
     const sender = new PublicKey(account);
     console.log("Sender's public key:", sender);
 
     const connection = new Connection(
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
     );
-    // let amount = 0.01;
-    // let toPubkey = new PublicKey(
-    //   "8SM1A6wNgreszhF8U7Fp8NHqmgT8euMZFfUvv5wCaYfL"
-    // );
+    let amount = 0.01;
+    let toPubkey = new PublicKey(
+      "8SM1A6wNgreszhF8U7Fp8NHqmgT8euMZFfUvv5wCaYfL"
+    );
 
     // const minimumBalance = await connection.getMinimumBalanceForRentExemption(
     //   0
     // );
 
-    // const transferSolInstruction = SystemProgram.transfer({
-    //   fromPubkey: sender, // Corrected here
-    //   toPubkey: toPubkey,
-    //   lamports: amount * LAMPORTS_PER_SOL,
-    // });
+    const transferSolInstruction = SystemProgram.transfer({
+      fromPubkey: sender, // Corrected here
+      toPubkey: toPubkey,
+      lamports: amount * LAMPORTS_PER_SOL,
+    });
 
-    // const { blockhash, lastValidBlockHeight } =
-    //   await connection.getLatestBlockhash();
+    const { blockhash, lastValidBlockHeight } =
+      await connection.getLatestBlockhash();
 
-    // const transaction: any = new Transaction({
-    //   feePayer: sender, // Corrected here
-    //   blockhash,
-    //   lastValidBlockHeight,
-    // }).add(transferSolInstruction);
+    const transaction: any = new Transaction({
+      feePayer: sender, // Corrected here
+      blockhash,
+      lastValidBlockHeight,
+    }).add(transferSolInstruction);
 
     // // Send and confirm the transaction
-    // const signature = await connection.sendTransaction(transaction);
+    const signature: any = await connection.sendTransaction(transaction);
 
     // Construct the successful response payload
-    const transaction = await connection.getParsedTransaction(signature,"confirmed");
 
-    console.log("this was the transaction : ", transaction)
-    const payload: CompletedAction = {
-      type: "completed",
-      title: "Transaction Successful",
-      icon: "https://res.cloudinary.com/ducsu6916/image/upload/v1729534996/rjzl1f1c8yfko1stduvg.jpg",
-      label: "Transaction Complete",
-      description: `Successfully transferred 0.0001 SOL to toString()}. Transaction signature: ${transaction}`
-    };
+    // console.log("this was the transaction : ", transaction);
+    // const payload = {
+    //   type: "completed",
+    //   title: "Transaction Successful",
+    //   icon: "https://res.cloudinary.com/ducsu6916/image/upload/v1729534996/rjzl1f1c8yfko1stduvg.jpg",
+    //   label: "Transaction Complete",
+    //   description: `Successfully transferred 0.0001 SOL to toString()}. Transaction signature: ${transaction}`
+    // };
+
+    const payload: ActionPostResponse = await createPostResponse({
+      fields: {
+        type: "transaction",
+        transaction: transaction,
+        },
+      },
+    );
 
     return NextResponse.json(payload, { headers });
   } catch (err) {
