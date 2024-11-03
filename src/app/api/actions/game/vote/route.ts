@@ -40,7 +40,7 @@ export const POST = async (req: NextRequest) => {
   try {
     const { searchParams } = req.nextUrl;
     const account = searchParams.get("account") || "";  // User's public key
-
+    console.log(account);
     const sender = new PublicKey(account);
     console.log("Sender's public key:", sender);
 
