@@ -40,5 +40,9 @@ export async function GET() {
   };
 
   // Send the response as JSON
-  return NextResponse.json(result);
+  return NextResponse.json(result, {
+    headers: {
+      "Cache-Control": "no-cache", // Disable browser caching
+    },
+  });
 }
