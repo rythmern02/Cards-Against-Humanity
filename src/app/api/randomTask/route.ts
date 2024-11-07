@@ -9,6 +9,12 @@ const shuffleArray = (array: string[]) => {
   }
 };
 
+// Utility function to get a random element from an array
+const getRandomElement = (array: string[]) => {
+  const randomIndex = Math.floor(Math.random() * array.length);
+  return array[randomIndex];
+};
+
 // Handler for the API route
 export async function GET() {
   // Shuffle tasks and options to ensure randomness
@@ -16,10 +22,16 @@ export async function GET() {
   shuffleArray(options);
 
   // Select one random task
-  const randomTask = tasks[0];
+  const randomTask = getRandomElement(tasks);
 
   // Select three unique random options
-  const randomOptions = options.slice(0, 3);
+  const randomOptions: any = [];
+  while (randomOptions.length < 3) {
+    const randomOption = getRandomElement(options);
+    if (!randomOptions.includes(randomOption)) {
+      randomOptions.push(randomOption);
+    }
+  }
 
   // Construct the response object
   const result = {
