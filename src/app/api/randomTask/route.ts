@@ -8,7 +8,7 @@ const shuffleArray = (array: string[]) => {
     [array[i], array[j]] = [array[j], array[i]];
   }
 };
-
+export const revalidate = 1;
 // Utility function to get a random element from an array
 const getRandomElement = (array: string[]) => {
   const randomIndex = Math.floor(Math.random() * array.length);
