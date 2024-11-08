@@ -33,16 +33,13 @@ export async function GET() {
     }
   }
 
-  // Construct the response object
+  // Construct the response object with a unique timestamp
   const result = {
     task: randomTask,
     options: randomOptions,
+    timestamp: Date.now(),
   };
 
-  // Send the response as JSON with the "Cache-Control" header
-  return NextResponse.json(result, {
-    headers: {
-      "Cache-Control": "no-cache, no-store, must-revalidate", // Disable browser caching
-    },
-  });
+  // Send the response as JSON
+  return NextResponse.json(result);
 }
