@@ -39,10 +39,10 @@ export async function GET() {
     options: randomOptions,
   };
 
-  // Send the response as JSON
+  // Send the response as JSON with the "Cache-Control" header
   return NextResponse.json(result, {
     headers: {
-      "Cache-Control": "no-cache", // Disable browser caching
+      "Cache-Control": "no-cache, no-store, must-revalidate", // Disable browser caching
     },
   });
 }
