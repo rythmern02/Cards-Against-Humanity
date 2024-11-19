@@ -96,11 +96,9 @@ export async function POST(req: NextRequest) {
     let toPubkey = new PublicKey(
       "8SM1A6wNgreszhF8U7Fp8NHqmgT8euMZFfUvv5wCaYfL"
     );
+    console.log("connection etablished !");
 
-    const minimumBalance = await connection.getMinimumBalanceForRentExemption(
-      0
-    );
-
+    
     const transferSolInstruction = SystemProgram.transfer({
       fromPubkey: sender, // Corrected here
       toPubkey: toPubkey,
@@ -109,13 +107,16 @@ export async function POST(req: NextRequest) {
 
     const { blockhash, lastValidBlockHeight } =
       await connection.getLatestBlockhash();
-
+    console.log("here is the connection blockchash: ", blockhash, lastValidBlockHeight);
+    
     const transaction = new Transaction({
       feePayer: sender, // Corrected here
       blockhash,
       lastValidBlockHeight,
     }).add(transferSolInstruction);
 
+    console.log("transaction....". transaction);
+    
     const hello: Action = {
       type: "action",
       icon: datam.imageUrl,
