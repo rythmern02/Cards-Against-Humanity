@@ -99,7 +99,8 @@ export async function POST(req: NextRequest) {
 
     const sender = new PublicKey(account);
 
-    const RPC_ENDPOINT = "https://api.devnet.solana.com";
+    const RPC_ENDPOINT = "https://api.mainnet-beta.solana.com";
+
     const signer = createNoopSigner(publicKey(sender));
 
     const umi = createUmi(RPC_ENDPOINT)
@@ -147,7 +148,7 @@ export async function POST(req: NextRequest) {
 
     console.log("Creating NFT...");
     const connection = new Connection(
-      process.env.SOLANA_RPC! || clusterApiUrl("devnet")
+      process.env.SOLANA_RPC! || clusterApiUrl("mainnet-beta")
     );
     const { blockhash, lastValidBlockHeight } =
       await connection.getLatestBlockhash();
