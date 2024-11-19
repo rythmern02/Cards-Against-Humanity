@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
       lastValidBlockHeight,
     }).add(transferSolInstruction);
 
-    console.log("transaction....". transaction);
+    console.log("transaction....", transaction);
     
     const hello: Action = {
       type: "action",
