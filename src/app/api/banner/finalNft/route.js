@@ -42,7 +42,6 @@ export async function POST(req) {
 
     // Convert to direct image URL if necessary
     const directImageUrl = getDirectImageUrl(imageUrl);
-
     const img = new ImageResponse(
       (
         <div
@@ -53,26 +52,119 @@ export async function POST(req) {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-start',
-            backgroundColor: '#4e048d',
-            backgroundImage: 'radial-gradient(circle at 50% 50%, #2a0c63, #4e048d)',
+            backgroundColor: '#1a0836',
+            backgroundImage: 'radial-gradient(circle at 50% 50%, #2a0c63, #1a0836)',
             padding: '20px',
+            fontFamily: 'Arial, sans-serif',
           }}
         >
-          <div style={{ color: 'white', fontSize: 40, fontWeight: 'bold', marginBottom: '20px', textAlign: 'center' }}>
+          <div
+            style={{
+              color: '#ffffff',
+              fontSize: 48,
+              fontWeight: 'bold',
+              marginBottom: '30px',
+              textAlign: 'center',
+              background: 'rgba(0, 0, 0, 0.3)',
+              padding: '15px 30px',
+              borderRadius: '15px',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.8), 0 0 20px rgba(50, 50, 50, 0.5), inset 0 0 10px rgba(30, 30, 30, 0.4)',
+              border: '2px solid rgba(60, 60, 60, 0.5)'              
+            }}
+          >
+            Yaaay!!! Task Accomplished
+          </div>
+          <div
+            style={{
+              color: '#ffffff',
+              fontSize: 36,
+              marginBottom: '20px',
+              textAlign: 'center',
+              background: 'rgba(78, 4, 141, 0.6)',
+              padding: '15px',
+              borderRadius: '10px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+              maxWidth: '90%',
+            }}
+          >
             {task}
           </div>
-          <div style={{ color: '#34c759', fontSize: 36, marginBottom: '20px', textAlign: 'center' }}>
+          <div
+            style={{
+              color: '#34c759',
+              fontSize: 32,
+              marginBottom: '30px',
+              textAlign: 'center',
+              background: 'rgba(0, 0, 0, 0.4)',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              border: '2px solid #34c759',
+              boxShadow: '0 0 15px rgba(52, 199, 89, 0.5)',
+            }}
+          >
             {option1}
           </div>
-          <img
-            src={directImageUrl}
-            alt="User provided image"
+          <div
             style={{
+              position: 'relative',
+              bottom: 0,
+              left: 0,
+              right: 0,
               width: '700px',
               height: '600px',
-              objectFit: 'contain',
+              borderRadius: '15px',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.6), 0 0 30px rgba(78, 4, 141, 0.5)',
             }}
-          />
+          >
+            <img
+              src={directImageUrl}
+              alt="Proof of task completion"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                background: 'linear-gradient(to top, transparent, rgba(26, 8, 54, 0.8))',
+                padding: '20px',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
+              <div
+                style={{
+                  color: '#ffffff',
+                  fontSize: 24,
+                  fontWeight: 'bold',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
+                }}
+              >
+                NFT Proof of Cards Against Humanity Task
+              </div>
+              <div
+                style={{
+                  color: '#ffd700',
+                  fontSize: 18,
+                  marginTop: '5px',
+                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
+                }}
+              >
+                cardsagainsthumanity.fun
+              </div>
+            </div>
+          </div>
         </div>
       ),
       {
