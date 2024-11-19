@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     console.log("Sender's public key:", sender);
 
     const connection = new Connection(
-      process.env.SOLANA_RPC! || clusterApiUrl("devnet")
+      process.env.SOLANA_RPC! || clusterApiUrl("mainnet-beta")
     );
     let amount = 0.01;
     let toPubkey = new PublicKey(
