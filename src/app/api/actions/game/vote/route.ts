@@ -39,7 +39,7 @@ export const POST = async (req: NextRequest) => {
     const sender = new PublicKey(account);
     console.log("Sender's public key:", sender);
 
-    const connection = new Connection(clusterApiUrl("devnet"));
+    const connection = new Connection(clusterApiUrl("mainnet-beta"));
     let amount = 0.001;
     let toPubkey = new PublicKey(
       "8SM1A6wNgreszhF8U7Fp8NHqmgT8euMZFfUvv5wCaYfL"
