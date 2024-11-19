@@ -22,23 +22,89 @@ export async function POST(req) {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
-            background: 'radial-gradient(circle, #2a0c63, #4e048d)',
-            fontSize: 32,
-            fontWeight: 600,
+            justifyContent: 'space-between',
+            background: 'radial-gradient(circle, #0a0216, #120324, #1b0134)',
+            color: 'white',
+            fontFamily: 'Arial, sans-serif',
+            padding: '20px',
           }}
         >
-          <div style={{ color: 'white', marginBottom: 40, textAlign: 'center', padding: '0 20px' }}>
+          <div style={{
+            fontSize: 36,
+            fontWeight: 'bold',
+            marginBottom: 20,
+            textAlign: 'center',
+            padding: '10px 20px',
+            background: 'rgba(255,255,255,0.1)',
+            borderRadius: '15px',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.3), 0 0 10px rgba(255,255,255,0.1)',
+            textShadow: '0 0 10px rgba(255,255,255,0.5)',
+          }}>
+            Welcome to the Dark Side of Humanity
+          </div>
+          <div style={{
+            fontSize: 28,
+            fontWeight: 600,
+            marginBottom: 20,
+            textAlign: 'center',
+            padding: '15px',
+            background: 'rgba(0,0,0,0.3)',
+            borderRadius: '10px',
+            border: '1px solid rgba(255,255,255,0.2)',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
+          }}>
             {question}
           </div>
-          <div style={{ color: '#34c759', marginBottom: 20, textAlign: 'center', padding: '0 20px' }}>
-            {option1}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 15,
+            width: '100%',
+          }}>
+            {[
+              { text: option1, color: '#34c759' },
+              { text: option2, color: '#ff9500' },
+              { text: option3, color: '#ff2d55' },
+            ].map((option, index) => (
+              <div key={index} style={{
+                color: option.color,
+                fontSize: 24,
+                textAlign: 'center',
+                padding: '10px 15px',
+                background: 'rgba(0,0,0,0.4)',
+                borderRadius: '8px',
+                border: `1px solid ${option.color}`,
+                boxShadow: `0 2px 4px rgba(0,0,0,0.2), 0 0 10px ${option.color}40`,
+                width: '90%',
+              }}>
+                {option.text}
+              </div>
+            ))}
           </div>
-          <div style={{ color: '#ff9500', marginBottom: 20, textAlign: 'center', padding: '0 20px' }}>
-            {option2}
+          <div style={{
+            fontSize: 20,
+            marginTop: 20,
+            textAlign: 'center',
+            padding: '15px',
+            background: 'rgba(255,255,255,0.05)',
+            borderRadius: '10px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+            maxWidth: '90%',
+          }}>
+            Perform this twisted task, capture your darkest self, and share the evidence through the digital void.
           </div>
-          <div style={{ color: '#ff2d55', textAlign: 'center', padding: '0 20px' }}>
-            {option3}
+          <div style={{
+            fontSize: 16,
+            marginTop: 15,
+            textAlign: 'center',
+            padding: '10px',
+            color: 'rgba(255,255,255,0.7)',
+            background: 'rgba(0,0,0,0.2)',
+            borderRadius: '8px',
+            maxWidth: '90%',
+          }}>
+            Upload your soul-capturing image to the cloud and paste its essence here to complete your task and mint your NFTs.
           </div>
         </div>
       ),
